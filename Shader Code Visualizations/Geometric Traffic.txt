@@ -1,0 +1,39 @@
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
+{
+    vec2 uv = (fragCoord - .5*iResolution.xy) / iResolution.y;
+    uv.x += 0.05;
+    
+    vec3 col = vec3(0);
+    
+    float a = .78;
+    float s = sin(a);
+    float c = cos(a);
+    uv *= mat2(c, -s, s, c);
+    uv *= 25;
+    
+    // Travel from 0 to 1
+    // As a reminder, fract() return x - floor(x)
+    // Or simply put, the fractional part of the float
+    // By subtracting 0.5 we map from [0 to 1] to [-0.5 to 0.5]
+    vec2 gridv = fract(uv) - 0.5;
+    vec2 id = floor(uv);
+    float m = 0.;
+    float t = 10.0 * iTime / (id.x - id.y);
+    
+    for(float y=-1; y <= 1; y++){
+        for(float x=-1; x <= 1; x++){
+        
+            vec2 offset = vec2(x, y);
+            
+            float d = length(gridv - offset);
+            float dist = length(id + offset) * 0.3;
+            float r = mix(.3, 1.5, sin(dist-t) * 0.5 + 0.5);
+            
+            m += smoothstep(r, r*.9, d);
+        }
+    }
+    
+    col += mod(m, 0.25) * 100.0;
+    
+    fragColor = vec4(col,1.0);
+}

@@ -1,0 +1,66 @@
+// Don't want to loop too long
+#define MAX_STEPS 100
+
+// Don't want to keep going into infinity
+#define MAX_DISTANCE 100.
+
+// Min dist to surface to count as a hit
+#define SURFACE_DISTANCE .01
+
+// Takes in position, origin of sphere, and radius of sphere
+float getDistance(vec3 v)
+{
+    // Sphere at <0, 1, 6> with radius 1
+    vec4 s = vec4(0, 1, 6, 1);
+    
+    float sphereDist = length(v - s.xyz) - s.w;
+    float planeDist = v.y;
+    
+    float totalDist = min(sphereDist, planeDist);
+    return totalDist;
+}
+
+// Takes in ray origin and ray distance
+float rayMarch(vec3 ro, vec3 rd)
+{
+    // Distance from origin, or distance along ray
+    float dO = 0.;
+ 
+    for(int i = 0; i < MAX_STEPS; i++)
+    {
+        vec3 p = ro + rd*dO;
+        
+        // Step size of position to surface
+        float dS = getDistance(p);
+        
+        // Add step size to total distance
+        dO += dS;
+        
+        if(dO>MAX_DISTANCE || dS < SURFACE_DISTANCE)
+            break;
+    }
+    
+    return dO;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = (fragCoord - .5 * iResolution.xy)/iResolution.y;
+
+    // Camera Model
+    vec3 cv = vec3(0, 1 + 0.5 * sin(iTime), 0);
+    
+    // Direction of ray
+    vec3 rd = normalize(vec3(uv.x, uv.y, 1));
+    
+    
+    // Raymarch
+    // Distance to plane = CV.y - PV.y
+    // Distance to sphere = length(spherePos - cameraPos) - sphereRadius 
+    //                      and pick smaller distance
+    float d = rayMarch(cv, rd);
+    vec3 col = vec3(d/9.);
+    
+    
+    fragColor = vec4(col, 1.0);
+}
