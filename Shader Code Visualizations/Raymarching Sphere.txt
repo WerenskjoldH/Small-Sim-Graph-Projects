@@ -1,20 +1,29 @@
-// Don't want to loop too long
 #define MAX_STEPS 100
-
-// Don't want to keep going into infinity
 #define MAX_DISTANCE 100.
-
-// Min dist to surface to count as a hit
 #define SURFACE_DISTANCE .01
 
-// Takes in position, origin of sphere, and radius of sphere
-float getDistance(vec3 v)
+float sdToSphere(vec3 v, vec3 spherePos, float sphereRadius)
+{
+    return length(v - spherePos) - sphereRadius;
+}
+
+float sdToPlane(vec3 v, vec3 planePos, vec4 planeNormal)
+{
+    return dot(v - planePos, planeNormal.xyz) + planeNormal.w;
+}
+
+float getDistanceToSurfaces(vec3 v)
 {
     // Sphere at <0, 1, 6> with radius 1
     vec4 s = vec4(0, 1, 6, 1);
+    vec4 s2 = vec4(0, 2, 6.5, 0.5);
+    vec4 planeN = vec4(0, 1, 0, 0);
+    vec3 planePosition = vec3(0, -1, 0);
+    normalize(planeN);
     
-    float sphereDist = length(v - s.xyz) - s.w;
-    float planeDist = v.y;
+    float sphereTwoDist = sdToSphere(v, s2.xyz, s.w);
+    float sphereDist = min(sphereTwoDist, sdToSphere(v, s.xyz, s.w));
+    float planeDist = sdToPlane(v, planePosition, planeN);
     
     float totalDist = min(sphereDist, planeDist);
     return totalDist;
@@ -31,7 +40,7 @@ float rayMarch(vec3 ro, vec3 rd)
         vec3 p = ro + rd*dO;
         
         // Step size of position to surface
-        float dS = getDistance(p);
+        float dS = getDistanceToSurfaces(p);
         
         // Add step size to total distance
         dO += dS;
@@ -51,7 +60,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 cv = vec3(0, 1 + 0.5 * sin(iTime), 0);
     
     // Direction of ray
-    vec3 rd = normalize(vec3(uv.x, uv.y, 1));
+    vec3 rd = normalize(vec3(-uv.x, uv.y, 1));
     
     
     // Raymarch
