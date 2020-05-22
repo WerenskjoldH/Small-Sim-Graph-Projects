@@ -1,0 +1,10 @@
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
+
+#define TICK_INTERVAL 30
+#define DT 0.1
+
+#define WINDOW_HEIGHT 500
+#define WINDOW_WIDTH 500
+
+#endif // !DEFINITIONS_H

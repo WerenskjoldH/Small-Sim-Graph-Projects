@@ -1,0 +1,17 @@
+﻿  Bot.cpp
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,85): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,58): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,31): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\GFXHelper.h(87,29): warning C4244:  'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\GFXHelper.h(87,18): warning C4244:  '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\GFXHelper.h(90,11): warning C4244:  'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\GFXHelper.h(91,11): warning C4244:  'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Bot.cpp(33,50): warning C4244:  'argument': conversion from 'real' to 'int', possible loss of data
+  Driving-Bot.cpp
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Bot.cpp(33,38): warning C4244:  'argument': conversion from 'real' to 'int', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,85): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,58): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Vector.h(268,31): warning C4244:  'argument': conversion from 'double' to 'real', possible loss of data
+  Generating Code...
+C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\Driving-Bot.cpp(70,19): warning C4305:  'argument': truncation from 'double' to 'float'
+  Driving-Bot.vcxproj -> C:\Users\Hunter Werenskjold\source\repos\Small-Sim-Graph-Projects\Visual Simulations\Driving-Bot\x64\Debug\Driving-Bot.exe
