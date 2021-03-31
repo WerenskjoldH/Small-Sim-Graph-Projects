@@ -27,13 +27,13 @@ bool Simulation::CalculateCollisionOffset(Entity* a, Entity* b, sf::Vector2f tra
 
 	// Is the current velocity magnitude greater or equal to the distance between the circles minus the radius of both
 	if (magVelocity < distBetween - (a->GetRadius() + b->GetRadius()))
-		false;
+		return false;
 
 	float e1DotE2 = a->GetPosition().x * b->GetPosition().x + a->GetPosition().y * b->GetPosition().y;
 
 	// Is Entity One moving towards Entity Two
 	if (e1DotE2 <= 0)
-		false;
+		return false;
 
 	sf::Vector2f velocityNorm = translateAToB / magVelocity;
 	float normDotAToB = velocityNorm.x * aToB.x + velocityNorm.y * aToB.y;
@@ -41,10 +41,10 @@ bool Simulation::CalculateCollisionOffset(Entity* a, Entity* b, sf::Vector2f tra
 	float closestDistance = distBetween * distBetween - normDotAToB * normDotAToB;
 
 	if (closestDistance > powf(a->GetRadius() + b->GetRadius(), 2.0f))
-		false;
+		return false;
 
 	if (distBetween > magVelocity)
-		false;
+		return false;
 
 	float collisionPointAlongV = powf((a->GetRadius() + b->GetRadius()), 2.0f) - closestDistance;
 
@@ -79,13 +79,13 @@ void Simulation::CalculateForces(Entity* e, float dt)
 		// Collision will occur
 		///
 
-		sf::Vector2f aVel = e->GetVelocity();
-		sf::Vector2f bVel = (*it)->GetVelocity();
+		sf::Vector2f aVel = e->GetVelocity() * dt;
+		sf::Vector2f bVel = (*it)->GetVelocity() * dt;
 
-		sf::Vector2f translateAToB = (*it)->GetVelocity() - e->GetVelocity();
+		sf::Vector2f translateAToB = bVel - aVel;
 		float magTranslateAToB = sqrtf(translateAToB.x * translateAToB.x + translateAToB.y * translateAToB.y);
 
-		sf::Vector2f translateBToA = e->GetVelocity() - (*it)->GetVelocity();
+		sf::Vector2f translateBToA = aVel - bVel;
 		float magTranslateBToA = sqrtf(translateBToA.x * translateBToA.x + translateBToA.y + translateBToA.y);
 
 		sf::Vector2f offset;
