@@ -13,4 +13,16 @@
 
 #define IM InputManager::getInstance()
 
+#define DEFAULT_RADIUS 10.0f
+#define DEFAULT_MASS 1.0f
+#define DEFAULT_COLOR sf::Color::White
+
+#define GRAVITY_X 0.0f
+#define GRAVITY_Y 1.0F
+
+#define BOUND_DAMPENING -0.5f
+#define BOUNDARY 50.0f
+
+#define TIME_SCALE_FACTOR 10.0f
+
 #endif

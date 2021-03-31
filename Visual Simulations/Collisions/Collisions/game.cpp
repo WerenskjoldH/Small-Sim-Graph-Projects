@@ -22,7 +22,7 @@ void Game::InitializeWindowSettings(sf::RenderWindow* window)
 
 void Game::InitializeSimulationSettings()
 {
-
+	simulation.Initialize();
 }
 
 void Game::CloseGame(sf::RenderWindow* window)
@@ -69,7 +69,7 @@ void Game::Begin()
 
 		sf::Time elapsed = clock.restart();
 
-		Update(&window, elapsed.asSeconds());
+		Update(&window, elapsed.asSeconds() * TIME_SCALE_FACTOR);
 
 		window.clear(BACKGROUND_COLOR);
 
@@ -91,9 +91,11 @@ void Game::UpdateInput(sf::RenderWindow* window)
 void Game::Update(sf::RenderWindow* window, float dt)
 {
 	UpdateInput(window);
+
+	simulation.Update(window, dt);
 }
 
 void Game::Draw(sf::RenderWindow* window)
 {
-
+	simulation.Draw(window);
 }

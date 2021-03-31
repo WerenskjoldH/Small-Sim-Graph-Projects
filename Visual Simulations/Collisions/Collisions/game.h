@@ -4,12 +4,15 @@
 #include "definitions.h"
 #include "consoleColorizer.h"
 #include "inputManager.h"
+#include "simulation.h"
 
 class Game
 {
 private:
 	// This is the default font we will use
 	sf::Font font;
+
+	Simulation simulation;
 
 public:
 
