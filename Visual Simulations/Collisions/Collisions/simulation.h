@@ -119,6 +119,8 @@ private:
 	void AddEntity(sf::Vector2f _position);
 	void AddEntity(sf::Vector2i _position);
 
+	bool CalculateCollisionOffset(Entity* A, Entity* B, sf::Vector2f translateAToB, sf::Vector2f* offset);
+
 	void CalculateForces(Entity* e, float dt);
 	void Integration(Entity* e, float dt);
 

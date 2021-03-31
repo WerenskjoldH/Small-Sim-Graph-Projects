@@ -10,7 +10,54 @@ void Simulation::AddEntity(sf::Vector2i _position)
 	AddEntity(sf::Vector2f(_position.x, _position.y));
 }
 
+bool Simulation::CalculateCollisionOffset(Entity* a, Entity* b, sf::Vector2f translateAToB, sf::Vector2f* offset)
+{
+	
+	float magTranslateAToB = sqrtf(translateAToB.x * translateAToB.x + translateAToB.y * translateAToB.y);
 
+	sf::Vector2f aToB = b->GetPosition() - a->GetPosition();
+
+	// Get distance between circles
+	float distBetween = sqrtf(aToB.x * aToB.x + aToB.y * aToB.y);
+	float magVelocity = magTranslateAToB;
+
+	///
+	// Escape Tests
+	///
+
+	// Is the current velocity magnitude greater or equal to the distance between the circles minus the radius of both
+	if (magVelocity < distBetween - (a->GetRadius() + b->GetRadius()))
+		false;
+
+	float e1DotE2 = a->GetPosition().x * b->GetPosition().x + a->GetPosition().y * b->GetPosition().y;
+
+	// Is Entity One moving towards Entity Two
+	if (e1DotE2 <= 0)
+		false;
+
+	sf::Vector2f velocityNorm = translateAToB / magVelocity;
+	float normDotAToB = velocityNorm.x * aToB.x + velocityNorm.y * aToB.y;
+
+	float closestDistance = distBetween * distBetween - normDotAToB * normDotAToB;
+
+	if (closestDistance > powf(a->GetRadius() + b->GetRadius(), 2.0f))
+		false;
+
+	if (distBetween > magVelocity)
+		false;
+
+	float collisionPointAlongV = powf((a->GetRadius() + b->GetRadius()), 2.0f) - closestDistance;
+
+	float distToCollision = closestDistance - sqrtf(collisionPointAlongV);
+	
+	sf::Vector2f offsetToCollision = velocityNorm * distToCollision;
+	float magOffsetToCollision = sqrtf(offsetToCollision.x * offsetToCollision.x + offsetToCollision.y * offsetToCollision.y);
+
+	offset->x = offsetToCollision.x;
+	offset->y = offsetToCollision.y;
+
+	return true;
+}
 
 void Simulation::CalculateForces(Entity* e, float dt)
 {
@@ -26,32 +73,57 @@ void Simulation::CalculateForces(Entity* e, float dt)
 		if (e == (*it))
 			continue;
 
-		sf::Vector2f aToB = (*it)->GetPosition() - e->GetPosition();
 
-		// Get distance between circles
-		float dist = std::sqrtf(aToB.x * aToB.x + aToB.y * aToB.y);
+
+		///
+		// Collision will occur
+		///
+
+		sf::Vector2f aVel = e->GetVelocity();
+		sf::Vector2f bVel = (*it)->GetVelocity();
+
+		sf::Vector2f translateAToB = (*it)->GetVelocity() - e->GetVelocity();
+		float magTranslateAToB = sqrtf(translateAToB.x * translateAToB.x + translateAToB.y * translateAToB.y);
+
+		sf::Vector2f translateBToA = e->GetVelocity() - (*it)->GetVelocity();
+		float magTranslateBToA = sqrtf(translateBToA.x * translateBToA.x + translateBToA.y + translateBToA.y);
+
+		sf::Vector2f offset;
 		
-		// Check Collision
-		if (dist < e->GetRadius() + (*it)->GetRadius())
-		{
-			float massSum = e->GetMass() + (*it)->GetMass();
+		if (!CalculateCollisionOffset(e, (*it), translateAToB, &offset))
+			continue;
 
-			sf::Vector2f c1NVelocity;
-			sf::Vector2f c2NVelocity;
+		float magOffset = sqrtf(offset.x * offset.x + offset.y * offset.y);
+		float shortenedByTranslated = magOffset / magTranslateAToB;
 
-			//c1NVelocity.x = (e->GetVelocity().x * (e->GetMass() - (*it)->GetMass()) + 2.0f * (*it)->GetMass() * (*it)->GetVelocity().x) / massSum;
-			//c1NVelocity.y = (e->GetVelocity().y * (e->GetMass() - (*it)->GetMass()) + 2.0f * (*it)->GetMass() * (*it)->GetVelocity().y) / massSum;
+		e->SetPosition(e->GetPosition() + aVel * shortenedByTranslated);
+		aVel *= shortenedByTranslated;
 
-			c1NVelocity = (e->GetVelocity() * (e->GetMass() - (*it)->GetMass()) + 2.0f * (*it)->GetMass() * (*it)->GetVelocity()) / massSum;
+		CalculateCollisionOffset((*it), e, translateBToA, &offset);
 
-			//c2NVelocity.x = ((*it)->GetVelocity().x * ((*it)->GetMass() - e->GetMass()) + 2.0f * e->GetMass() * e->GetVelocity().x) / massSum;
-			//c2NVelocity.y = ((*it)->GetVelocity().y * ((*it)->GetMass() - e->GetMass()) + 2.0f * e->GetMass() * e->GetVelocity().y) / massSum;
+		magOffset = sqrtf(offset.x * offset.x + offset.y * offset.y);
+		shortenedByTranslated = magOffset / magTranslateAToB;
 
-			c2NVelocity = ((*it)->GetVelocity() * ((*it)->GetMass() - e->GetMass()) + 2.0f * e->GetMass() * e->GetVelocity()) / massSum;
+		(*it)->SetPosition((*it)->GetPosition() + bVel * shortenedByTranslated);
+		bVel *= shortenedByTranslated;
 
-			e->SetPosition(e->GetPosition() + c1NVelocity * dt);
-			(*it)->SetPosition((*it)->GetPosition() + c2NVelocity * dt);
-		}
+		///
+		// Apply Collision Force
+		///
+
+		sf::Vector2f norm = e->GetPosition() - (*it)->GetPosition();
+		norm = norm / sqrtf(norm.x * norm.x + norm.y * norm.y);
+
+		float a1 = e->GetVelocity().x * norm.x + e->GetVelocity().y * norm.y;
+		float a2 = (*it)->GetVelocity().x * norm.x + (*it)->GetVelocity().y * norm.y;
+
+		float optiP = (2.0 * (a1 - a2)) / (e->GetMass() + (*it)->GetMass());
+
+		sf::Vector2f v1P = aVel + optiP * (*it)->GetMass() * norm;
+		sf::Vector2f v2P = bVel + optiP * e->GetMass() * norm;
+
+		e->SetVelocity(v1P);
+		(*it)->SetVelocity(v2P);
 	}
 
 	// Add Gravity
